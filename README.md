@@ -1,4 +1,4 @@
-> epub2tts is a free and open source python app to easily create a full-featured audiobook from an epub or text file using realistic text-to-speech from [Coqui AI TTS](https://github.com/coqui-ai/TTS), OpenAI or MS Edge.
+
 
 ## 🚀 Features
 
@@ -12,7 +12,6 @@
 - [x] Resumes where it left off if interrupted
 - [x] NOTE: epub file must be DRM-free
 
-**NOTE:** Check out [epub2tts-edge](https://github.com/aedocw/epub2tts-edge/) for a VERY fast lightweight alternative that only works with MS Edge. That version reads multiple sentences in parallel and goes much quicker!
 
 
 ## 📖 Usage
@@ -67,55 +66,7 @@ Uses [Microsoft Edge TTS](https://github.com/rany2/edge-tts/) in the cloud, FREE
 * --no-deepspeed - Disable deepspeed
 * --cover image.jpg - jpg image to use for cover
 
-</details>
 
-## 🐞 Reporting bugs
-<details>
-<summary>How to report bugs/issues</summary>
-
-Thank you in advance for reporting any bugs/issues you encounter! If you are having issues, first please [search existing issues](https://github.com/aedocw/epub2tts/issues) to see if anyone else has run into something similar previously.
-
-If you've found something new, please open an issue and be sure to include:
-1. The full command you executed
-2. The platform (Linux, Windows, OSX, Docker)
-3. Your Python version if not using Docker
-4. Try running the command again with `--debug --minratio 0` added on, to get more information
-5. Relevant output around the crash, including the sentence (should be in debug output) if it crashed during a TTS step
-
-</details>
-
-## 🗒️ Release notes
-<details>
-<summary>Release notes </summary>
-
-* 20240403: Added support for specifying speaker per chapter, https://github.com/aedocw/epub2tts/issues/229
-* 20240320: Added MS Edge cloud TTS support
-* 20240301: Added `--skip-cleanup` option to skip replacement of special characters with ","
-* 20240222: Implemented pause between sentences, https://github.com/aedocw/epub2tts/issues/208 and https://github.com/aedocw/epub2tts/issues/153
-* 20240131: [Repaired missing pause between chapters](https://github.com/aedocw/epub2tts/issues/204)
-* 20240114: Updated README
-* 20240111: Added support for Title & Author in text files
-* 20240110: Added support for "--cover image.jpg"
-
-</details>
-
-## Performance
-<details>
-<summary>Some benchmarks</summary>
-VITS model is the fastest, does not require GPU, but does not sound as good as using XTTS. We have not done any comparative benchmarks with that model.
-
-Typical inference times for xtts_v2 averaged over 4 processing chunks (about 4 sentences each) that can be expected:
-
-```
-| Hardware                            | Inference Time |
-|-------------------------------------|----------------|
-| 20x CPU Xeon E5-2630 (without AVX)  | 3.7x realtime  |
-| 20x CPU Xeon Silver 4214 (with AVX) | 1.7x realtime  |
-| 8x CPU Xeon Silver 4214 (with AVX)  | 2.0x realtime  |
-| 2x CPU Xeon Silver 4214 (with AVX)  | 2.9x realtime  |
-| Intel N4100 Atom (NAS)              | 4.7x realtime  |
-| GPU RTX A2000 4GB (w/o deepspeed)   | 0.4x realtime  |
-| GPU RTX A2000 4GB (w deepspeed)     | 0.15x realtime |
 ```
 </details>
 
@@ -183,92 +134,4 @@ Runnig epub2tts in WSL2 with Ubuntu 22 is the easiest approach, but these steps 
 
 11. If all goes well, you should be able to call epub2tts from within your venv and update it from this directory going forward. To update, use `git pull` and then `pip install . --upgrade`
 
-**Some errors you may encounter**
-* Encountered error while trying to install package lxml
-  * Run `pip install lxml` to install the latest version manually then re-run `pip install .`
-* ffmpeg not found
-  * Rerun the command `choco install ffmpeg``, making sure you are in an elevated powershell session, outside of the virtual environment
-* NLTK: punkt not found
-  * Run the following to install it: `python -c "import nltk"` then `python -m nltk.downloader punkt`
-* Torch not compiled with CUDA enabled
-  * `pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`
-* If you have deepspeed installed, it may be detected but not work properly, causing errors. If that is the case, add `--no-deepspeed` and it will not be used.
 
-</details>
-
-<details>
-<summary>DOCKER</summary>
-
-Voice models will be saved locally in `~/.local/share/tts`
-
-Docker usage does not reliably utilize GPU, if someone wants to work on improving this your PR will be very welcome!
-
-For *Linux and MacOS*:
-```
-alias epub2tts='docker run -e COQUI_TOS_AGREED=1 -v "$PWD:$PWD" -v ~/.local/share/tts:/root/.local/share/tts -w "$PWD" ghcr.io/aedocw/epub2tts:release'
-```
-
-For *Windows*:
-Pre-requisites:
-* Install Docker Desktop
-* From PowerShell run "mkdir ~/.local/share/tts"
-
-```
-#Example for running scan of "mybook.epub"
-docker run -e COQUI_TOS_AGREED=1 -v ${PWD}/.local/share/tts:/root/.local/share/tts -v ${PWD}:/root -w /root ghcr.io/aedocw/epub2tts:release mybook.epub --scan
-
-#Example for reading parts 3 through 15 of "mybook.epub"
-docker run -e COQUI_TOS_AGREED=1 -v ${PWD}/.local/share/tts:/root/.local/share/tts -v ${PWD}:/root -w /root ghcr.io/aedocw/epub2tts:release mybook.epub --start 3 --end 15
-```
-</details>
-
-<details>
-<summary>DEVELOPMENT INSTALL</summary>
-
-```
-#clone the repo
-git clone https://github.com/aedocw/epub2tts
-cd epub2tts
-#create a virtual environment
-python -m venv .venv
-#activate the virtual environment
-source .venv/bin/activate
-#install dependencies
-sudo apt install espeak-ng ffmpeg
-pip install -r requirements.txt
-```
-</details>
-
-
-## Updating
-
-<details>
-<summary>UPDATING YOUR INSTALLATION</summary>
-
-1. cd to repo directory
-2. `git pull`
-3. Activate virtual environment you installed epub2tts in if you installed in a virtual environment
-4. `pip install . --upgrade`
-</details>
-
-
-## Author
-
-👤 **Christopher Aedo**
-
-- Website: [aedo.dev](https://aedo.dev)
-- GitHub: [@aedocw](https://github.com/aedocw)
-- LinkedIn: [@aedo](https://linkedin.com/in/aedo)
-
-👥 **Contributors**
-
-[![Contributors](https://contrib.rocks/image?repo=aedocw/epub2tts)](https://github.com/aedocw/epub2tts/graphs/contributors)
-
-## 🤝 Contributing
-
-Contributions, issues and feature requests are welcome!\
-Feel free to check the [issues page](https://github.com/aedocw/epub2tts/issues) or [discussions page](https://github.com/aedocw/epub2tts/discussions).
-
-## Show your support
-
-Give a ⭐️ if this project helped you!
